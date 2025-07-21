@@ -1,0 +1,193 @@
+// ============================================================================
+// PRISMA SCHEMA FOR TASK MANAGER (Supabase Compatible)
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+
+
+enum UserRole {
+  admin
+  member
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  completed
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+enum ProjectMemberRole {
+  owner
+  member
+}
+
+enum NotificationType {
+  info
+  task_assigned
+  task_completed
+  project_invite
+  comment
+}
+
+
+
+model User {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name           String   @db.VarChar(100)
+  email          String   @unique @db.VarChar(255)
+  passwordHash   String   @map("password_hash") @db.Text
+  profileImage   String?  @map("profile_image") @db.Text
+  role           UserRole @default(member)
+  isActive       Boolean  @default(true) @map("is_active")
+  emailVerified  Boolean  @default(false) @map("email_verified")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  ownedProjects    Project[]         @relation("ProjectOwner")
+  projectMembers   ProjectMember[]
+  assignedTasks    Task[]            @relation("TaskAssignee")
+  createdTasks     Task[]            @relation("TaskCreator")
+  comments         Comment[]
+  notifications    Notification[]
+
+  @@map("users")
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+
+
+model Project {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name        String   @db.VarChar(200)
+  description String?  @db.Text
+  ownerId     String   @map("owner_id") @db.Uuid
+  isArchived  Boolean  @default(false) @map("is_archived")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  owner         User              @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members       ProjectMember[]
+  tasks         Task[]
+  notifications Notification[]
+
+  @@map("projects")
+  @@index([ownerId])
+  @@index([createdAt])
+  @@index([isArchived])
+}
+
+
+
+model ProjectMember {
+  id        String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  projectId String            @map("project_id") @db.Uuid
+  userId    String            @map("user_id") @db.Uuid
+  role      ProjectMemberRole @default(member)
+  joinedAt  DateTime          @default(now()) @map("joined_at") @db.Timestamptz(6)
+
+  // Relations
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@map("project_members")
+  @@index([projectId])
+  @@index([userId])
+  @@index([role])
+}
+
+
+
+model Task {
+  id          String       @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  projectId   String       @map("project_id") @db.Uuid
+  title       String       @db.VarChar(300)
+  description String?      @db.Text
+  status      TaskStatus   @default(todo)
+  priority    TaskPriority @default(medium)
+  dueDate     DateTime?    @map("due_date") @db.Date
+  assignedTo  String?      @map("assigned_to") @db.Uuid
+  createdBy   String       @map("created_by") @db.Uuid
+  completedAt DateTime?    @map("completed_at") @db.Timestamptz(6)
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime     @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  project       Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee      User?          @relation("TaskAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
+  creator       User           @relation("TaskCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  comments      Comment[]
+  notifications Notification[]
+
+  @@map("tasks")
+  @@index([projectId])
+  @@index([assignedTo])
+  @@index([createdBy])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+
+
+model Comment {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  taskId    String   @map("task_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  // Relations
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("comments")
+  @@index([taskId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+
+model Notification {
+  id               String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId           String           @map("user_id") @db.Uuid
+  title            String           @db.VarChar(200)
+  message          String           @db.Text
+  type             NotificationType @default(info)
+  isRead           Boolean          @default(false) @map("is_read")
+  relatedTaskId    String?          @map("related_task_id") @db.Uuid
+  relatedProjectId String?          @map("related_project_id") @db.Uuid
+  createdAt        DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  // Relations
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  relatedTask    Task?    @relation(fields: [relatedTaskId], references: [id], onDelete: Cascade)
+  relatedProject Project? @relation(fields: [relatedProjectId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+}
