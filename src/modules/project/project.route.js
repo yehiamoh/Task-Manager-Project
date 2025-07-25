@@ -6,15 +6,18 @@ import {
   updateProject,
   getProject,
   deleteProject,
+  inviteToProject,
 } from "./project.controller.js";
 
 const projectRouter = express.Router();
 
 projectRouter.route("/").get(getProjects).post(createProject);
 projectRouter
-  .route("/:id")
+  .route("/:projectId")
   .get(getProject)
   .put(updateProject)
   .delete(deleteProject);
+
+projectRouter.post("/:projectId/invite", inviteToProject);
 
 export default projectRouter;
