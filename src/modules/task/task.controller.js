@@ -7,7 +7,7 @@ import {
   UpdateTaskDetailesService,
 } from "./task.service.js";
 
-export const AddTaskInProjectController = async (req, res) => {
+export const AddTaskInProjectController = async (req, res, next) => {
   try {
     const taskData = {
       ...req.body,
@@ -18,15 +18,11 @@ export const AddTaskInProjectController = async (req, res) => {
     await AddTaskInProjectService(taskData);
     return res.status(201).json({ message: "Task created successfully" });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
-    return;
+    next(error);
   }
 };
 
-export const AssignTaskByEmailController = async (req, res) => {
+export const AssignTaskByEmailController = async (req, res, next) => {
   try {
     if (!req.body || !req.params.taskId || !req.body.email) {
       res.status(401).json({
@@ -48,15 +44,11 @@ export const AssignTaskByEmailController = async (req, res) => {
     //TODO
     // Mailing Service To Notify the user that he has been assigned To a task
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
-    return;
+    next(error);
   }
 };
 
-export const DeleteTaskController = async (req, res) => {
+export const DeleteTaskController = async (req, res, next) => {
   //TODO
   //Middle ware (IsOwner To Check (It's A field In The Table Called TaskCreator))
   try {
@@ -75,15 +67,11 @@ export const DeleteTaskController = async (req, res) => {
       message: "Task Assigned Successfully",
     });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
-    return;
+    next(error);
   }
 };
 
-export const UpdateTaskStatusController = async (req, res) => {
+export const UpdateTaskStatusController = async (req, res, next) => {
   try {
     const { taskId } = req.params;
     const { status } = req.body;
@@ -103,15 +91,11 @@ export const UpdateTaskStatusController = async (req, res) => {
       message: "Task Status Been Updated Successfully",
     });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
-    return;
+    next(error);
   }
 };
 
-export const GetTasksBtProjectController = async (req, res) => {
+export const GetTasksBtProjectController = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const { status, pirority } = req.query;
@@ -134,14 +118,11 @@ export const GetTasksBtProjectController = async (req, res) => {
       data: tasks,
     });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
+    next(error);
   }
 };
 
-export const UpdateTaskDetailsController = async (req, res) => {
+export const UpdateTaskDetailsController = async (req, res, next) => {
   try {
     const { taskId } = req.params;
     const updateData = req.body;
@@ -158,9 +139,6 @@ export const UpdateTaskDetailsController = async (req, res) => {
       data: task,
     });
   } catch (error) {
-    res.status(error.statusCode || 500).json({
-      message: error.message,
-      errors: error.errors,
-    });
+    next(error);
   }
 };
