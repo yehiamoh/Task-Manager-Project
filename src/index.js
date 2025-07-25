@@ -5,6 +5,8 @@ dotenv.config();
 import "./config/database.js";
 import projectRouter from "./modules/project/project.route.js";
 import userRouter from "./modules/user/user.route.js";
+import authRouter from "./modules/auth/auth.route.js";
+import { errorHandler } from "./middleware/errorHandler.middleware.js";
 const PORT = process.env.PORT ?? 3000;
 
 const app = express();
@@ -14,7 +16,8 @@ app.use(express.json());
 // Api Routes
 app.use("/user", userRouter);
 app.use("/project", projectRouter);
-
+app.use("/api", taskRouter);
+app.use("/api", authRouter);
 // Simple connection check
 app.get("/", (req, res) => {
   res.json({
@@ -23,7 +26,7 @@ app.get("/", (req, res) => {
     documentation: "Visit /api-docs for API documentation",
   });
 });
-
+app.use(errorHandler);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -31,7 +34,6 @@ app.use((req, res) => {
     message: `Cannot ${req.method} ${req.originalUrl}`,
   });
 });
-app.use("/api", taskRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
