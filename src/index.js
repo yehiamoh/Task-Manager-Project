@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import taskRouter from "./modules/task/task.route.js";
 dotenv.config();
 import "./config/database.js";
 import projectRouter from "./modules/project/project.route.js";
@@ -30,6 +31,7 @@ app.use((req, res) => {
     message: `Cannot ${req.method} ${req.originalUrl}`,
   });
 });
+app.use("/api", taskRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
