@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import ApiError from "./API.Error.js";
+import ApiError from "./api.error.js";
 import dotenv from "dotenv";
 
 dotenv.config();

@@ -1,4 +1,4 @@
-import ApiError from "../../utils/API.Error.js";
+import ApiError from "../../utils/api.error.js";
 import { RegisterRepository } from "./auth.repository.js";
 import { hashPassword, comparePassword } from "../../utils/bcrypt.js";
 import { generateToken } from "../../utils/jwt.js";

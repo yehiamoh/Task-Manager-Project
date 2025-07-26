@@ -1,5 +1,5 @@
 import express from "express";
-
+import { verifyLogin } from "../../middleware/auth.middleware.js";
 import {
   getProjects,
   createProject,
@@ -11,13 +11,17 @@ import {
 
 const projectRouter = express.Router();
 
-projectRouter.route("/").get(getProjects).post(createProject);
 projectRouter
-  .route("/:projectId")
-  .get(getProject)
-  .put(updateProject)
-  .delete(deleteProject);
+  .route("/project")
+  .get(verifyLogin, getProjects)
+  .post(verifyLogin, createProject);
+projectRouter
+  .route("/project/:projectId")
+  .get(verifyLogin, getProject)
+  .put(verifyLogin, updateProject)
+  .delete(verifyLogin, deleteProject);
 
-projectRouter.post("/:projectId/invite", inviteToProject);
+projectRouter.post("/project/:projectId/invite", verifyLogin, inviteToProject);
+// projectRouter.post("/project/:projectId/confirm", verifyLogin, confirmInviteToProject);
 
 export default projectRouter;

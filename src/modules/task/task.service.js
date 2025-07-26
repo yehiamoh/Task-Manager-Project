@@ -8,7 +8,7 @@ import {
 } from "./task.repository.js";
 import { getUserByEmail } from "../user/user.repository.js";
 import { TaskStatus, TaskPriority } from "@prisma/client";
-import ApiError from "../../utils/API.Error.js";
+import ApiError from "../../utils/api.error.js";
 
 export const AddTaskInProjectService = async (task) => {
   try {

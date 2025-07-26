@@ -1,8 +1,10 @@
 import projectService from "./project.service.js";
 import asyncHandler from "../../utils/asyncHandler.js";
+import projectMembersService from "../projectMembers/projectMembers.service.js";
 
 export const getProjects = asyncHandler(async (req, res) => {
-  const projects = await projectService.getAllProjects();
+  const userId = req.user.userId;
+  const projects = await projectService.getAllProjects(userId);
   res.status(200).json({
     success: true,
     data: projects,
@@ -11,7 +13,8 @@ export const getProjects = asyncHandler(async (req, res) => {
 
 export const getProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
-  const project = await projectService.getProject(projectId);
+  const userId = req.user.userId;
+  const project = await projectService.getProject(projectId, userId);
   res.status(200).json({
     success: true,
     data: project,
@@ -20,7 +23,8 @@ export const getProject = asyncHandler(async (req, res) => {
 
 export const createProject = asyncHandler(async (req, res) => {
   const projectData = req.body;
-  const project = await projectService.createProject(projectData);
+  const userId = req.user.userId;
+  const project = await projectService.createProject(projectData, userId);
   res.status(201).json({
     success: true,
     data: project,
@@ -31,7 +35,7 @@ export const updateProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const projectData = req.body;
   const project = await projectService.updateProject(projectId, projectData);
-  res.status(201).json({
+  res.status(200).json({
     success: true,
     data: project,
   });
@@ -40,16 +44,17 @@ export const updateProject = asyncHandler(async (req, res) => {
 export const deleteProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   await projectService.deleteProject(projectId);
-  res.status(204).json();
+  res.status(204).send();
 });
 
 export const inviteToProject = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { users } = req.body;
-  const invite = await projectService.inviteToProject(projectId, users);
-  res.status(201).json({
+  const result = await projectService.inviteToProject(projectId, users);
+  res.status(200).json({
     success: true,
-    message: "Email sent",
-    data: invite,
+    data: result,
   });
 });
+
+export const confirmInviteToProject = asyncHandler(async (req, res) => {});

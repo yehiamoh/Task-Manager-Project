@@ -3,12 +3,12 @@ import { RegisterService, LoginService } from "./auth.service.js";
 export const Register = async (req, res, next) => {
   try {
     const { email, name, password } = req.body;
-
+    console.log(email, name, password);
     const { token, user } = await RegisterService(name, password, email);
 
     res.status(201).json({
       status: "success",
-      message: "User Created Succesfully",
+      message: "User Created Successfully",
       data: user,
       accessToken: token,
     });

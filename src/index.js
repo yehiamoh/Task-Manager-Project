@@ -4,6 +4,7 @@ import taskRouter from "./modules/task/task.route.js";
 dotenv.config();
 import "./config/database.js";
 import projectRouter from "./modules/project/project.route.js";
+import projectMembersRouter from "./modules/projectMembers/projectMembers.route.js";
 import userRouter from "./modules/user/user.route.js";
 import authRouter from "./modules/auth/auth.route.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
@@ -14,10 +15,11 @@ const app = express();
 app.use(express.json());
 
 // Api Routes
-app.use("/user", userRouter);
-app.use("/project", projectRouter);
-app.use("/api", taskRouter);
 app.use("/api", authRouter);
+app.use("/api", userRouter);
+app.use("/api", projectRouter);
+app.use("/api", projectMembersRouter);
+app.use("/api", taskRouter);
 // Simple connection check
 app.get("/", (req, res) => {
   res.json({

@@ -1,11 +1,23 @@
 import prisma from "../../config/database.js";
 
 class ProjectRepository {
-  async getAll() {
+  async getAll(userId) {
     return await prisma.project.findMany({
+      where: { ownerId: userId },
       include: {
         tasks: true,
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
         owner: {
           select: {
             name: true,
@@ -15,12 +27,23 @@ class ProjectRepository {
       },
     });
   }
-  async get(id) {
+  async get(projectId, userId) {
     return await prisma.project.findUnique({
-      where: { id: id },
+      where: { id: projectId, ownerId: userId },
       include: {
         tasks: true,
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
         owner: {
           select: {
             name: true,
@@ -30,10 +53,14 @@ class ProjectRepository {
       },
     });
   }
-  async create(projectData) {
-    const { name, ownerId, members, tasks } = projectData;
+  async create(projectData, userId) {
+    const { name, description, members = [], tasks = [] } = projectData;
     return await prisma.project.create({
-      data: { name, ownerId, members, tasks },
+      data: {
+        name,
+        ownerId: userId,
+        description,
+      },
       include: {
         owner: {
           select: {
@@ -42,14 +69,26 @@ class ProjectRepository {
           },
         },
         tasks: true,
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
       },
     });
   }
-  async update(id, projectData) {
+  async update(projectId, userId, projectData) {
+    const { members, tasks, ...updateData } = projectData;
     return await prisma.project.update({
-      where: { id: id },
-      data: { ...projectData },
+      where: { id: projectId, ownerId: userId },
+      data: updateData,
       include: {
         owner: {
           select: {
@@ -58,7 +97,18 @@ class ProjectRepository {
           },
         },
         tasks: true,
-        members: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
       },
     });
   }
