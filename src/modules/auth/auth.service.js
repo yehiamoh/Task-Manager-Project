@@ -2,7 +2,7 @@ import ApiError from "../../utils/api.error.js";
 import { RegisterRepository } from "./auth.repository.js";
 import { hashPassword, comparePassword } from "../../utils/bcrypt.js";
 import { generateToken } from "../../utils/jwt.js";
-import { getUserByEmail } from "../user/user.repository.js";
+import userRepository from "../user/user.repository.js";
 export const RegisterService = async (name, password, email) => {
   if (!name || !password || !email) {
     throw new ApiError(
@@ -12,7 +12,7 @@ export const RegisterService = async (name, password, email) => {
   }
 
   try {
-    const IsUserExist = await getUserByEmail(email);
+    const IsUserExist = await userRepository.getUserByEmail(email);
 
     if (IsUserExist) {
       throw new ApiError(403, "User Already Exists");
@@ -50,7 +50,7 @@ export const LoginService = async (email, password) => {
     throw new ApiError(400, "Bad Request: provide a proper email and password");
   }
   try {
-    const user = await getUserByEmail(email);
+    const user = await userRepository.getUserByEmail(email);
     if (!user) {
       throw new ApiError(404, "User not found");
     }
