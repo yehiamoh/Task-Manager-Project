@@ -8,6 +8,7 @@ import projectMembersRouter from "./modules/projectMembers/projectMembers.route.
 import userRouter from "./modules/user/user.route.js";
 import authRouter from "./modules/auth/auth.route.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
+import commentRouter from "./modules/comment/comment.router.js";
 const PORT = process.env.PORT ?? 3000;
 
 const app = express();
@@ -20,6 +21,7 @@ app.use("/api", userRouter);
 app.use("/api", projectRouter);
 app.use("/api", projectMembersRouter);
 app.use("/api", taskRouter);
+app.use("/api", commentRouter);
 // Simple connection check
 app.get("/", (req, res) => {
   res.json({
