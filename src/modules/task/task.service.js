@@ -6,7 +6,7 @@ import {
   UpdateTaskStatusRepository,
   GetTasksByProjectRepository,
 } from "./task.repository.js";
-import { getUserByEmail } from "../user/user.repository.js";
+import userRepository from "../user/user.repository.js";
 import { TaskStatus, TaskPriority } from "@prisma/client";
 import ApiError from "../../utils/api.error.js";
 
@@ -20,7 +20,7 @@ export const AddTaskInProjectService = async (task) => {
 
 export const AssignTaskToUserByEmailService = async (email, taskId) => {
   try {
-    const user = await getUserByEmail(email);
+    const user = await userRepository.getUserByEmail(email);
     if (!user) {
       throw new ApiError(404, "User not found", [
         `User with email ${email} does not exist`,
