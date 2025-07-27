@@ -27,26 +27,7 @@ class ProjectMembersService {
       throw new ApiError(500, "Failed to get member", [error.message]);
     }
   }
-  // TODO: Make Validation to see if the member is email invited or not before get added
-  async addMember(projectId, userId, role = "member") {
-    try {
-      const existingMember = await projectMembersRepository.getMember(
-        projectId,
-        userId
-      );
-      if (existingMember) throw new ApiError(409, "Member already exists");
-      const newMember = await projectMembersRepository.addMember(
-        projectId,
-        userId,
-        role
-      );
 
-      return newMember;
-    } catch (error) {
-      if (error instanceof ApiError) throw error;
-      throw new ApiError(500, "Failed to add member", [error.message]);
-    }
-  }
   async removeMember(projectId, memberId, userId) {
     try {
       const isOwner = await projectMembersRepository.getMember(
