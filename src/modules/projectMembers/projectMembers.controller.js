@@ -25,18 +25,6 @@ export const getMember = asyncHandler(async (req, res) => {
   });
 });
 
-export const addMember = asyncHandler(async (req, res) => {
-  const { projectId } = req.params;
-  const userId = req.user.userId;
-  const newMember = await projectMembersService.addMember(projectId, userId);
-
-  res.status(201).json({
-    success: true,
-    message: "Member Successfully Added",
-    data: newMember,
-  });
-});
-
 // TODO => Controller to update the member role
 
 export const removeMember = asyncHandler(async (req, res) => {

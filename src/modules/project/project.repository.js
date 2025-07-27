@@ -3,7 +3,18 @@ import prisma from "../../config/database.js";
 class ProjectRepository {
   async getAll(userId) {
     return await prisma.project.findMany({
-      where: { ownerId: userId },
+      where: {
+        OR: [
+          { ownerId: userId }, // User is the owner
+          {
+            members: {
+              some: {
+                userId: userId, // User is a member
+              },
+            },
+          },
+        ],
+      },
       include: {
         tasks: true,
         members: {
@@ -27,9 +38,10 @@ class ProjectRepository {
       },
     });
   }
-  async get(projectId, userId) {
+
+  async getById(projectId) {
     return await prisma.project.findUnique({
-      where: { id: projectId, ownerId: userId },
+      where: { id: projectId },
       include: {
         tasks: true,
         members: {
@@ -53,6 +65,46 @@ class ProjectRepository {
       },
     });
   }
+
+  async get(projectId, userId) {
+    return await prisma.project.findFirst({
+      where: {
+        id: projectId,
+        OR: [
+          { ownerId: userId },
+          {
+            members: {
+              some: {
+                userId: userId,
+              },
+            },
+          },
+        ],
+      },
+      include: {
+        tasks: true,
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                profileImage: true,
+              },
+            },
+          },
+        },
+        owner: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+    });
+  }
+
   async create(projectData, userId) {
     const { name, description, members = [], tasks = [] } = projectData;
     return await prisma.project.create({
