@@ -1,14 +1,6 @@
 import prisma from "../../config/database.js";
 import asyncHandler from "../../utils/asyncHandler.js";
-
-export const createUser = asyncHandler(async (req, res) => {
-  const { name, email, passwordHash } = req.body;
-  const newUser = await prisma.user.create({
-    data: { name, email, passwordHash },
-  });
-  res.status(201).json(newUser);
-});
-
+import userService from "./user.service.js";
 export const getAllUsers = asyncHandler(async (req, res) => {
   const getUsers = await prisma.user.findMany({
     include: {
@@ -19,5 +11,14 @@ export const getAllUsers = asyncHandler(async (req, res) => {
   res.status(200).json({
     success: true,
     data: getUsers,
+  });
+});
+
+export const getUserByEmail = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  const user = await userService.getUserByEmail(email);
+  res.status(200).json({
+    success: true,
+    data: user,
   });
 });
