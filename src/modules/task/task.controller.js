@@ -95,7 +95,7 @@ export const UpdateTaskStatusController = async (req, res, next) => {
   }
 };
 
-export const GetTasksBtProjectController = async (req, res, next) => {
+export const GetTasksByProjectController = async (req, res, next) => {
   try {
     const { projectId } = req.params;
     const { status, pirority } = req.query;
