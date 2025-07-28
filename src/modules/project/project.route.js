@@ -14,8 +14,8 @@ const projectRouter = express.Router();
 
 projectRouter
   .route("/project")
-  .get(verifyLogin, getProjects)
-  .post(verifyLogin, createProject);
+  .post(verifyLogin, createProject)
+  .get(verifyLogin, getProjects);
 
 projectRouter.get(
   "/project/accept-invitation/:token",

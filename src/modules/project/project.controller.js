@@ -56,7 +56,7 @@ export const sendInvite = asyncHandler(async (req, res) => {
   const { projectId } = req.params;
   const { user } = req.body;
   const ownerId = req.user.userId;
-  const result = await projectService.inviteToProject(projectId, user, ownerId);
+  const result = await projectService.sendInvite(projectId, user, ownerId);
   res.status(200).json({
     success: true,
     data: result,
