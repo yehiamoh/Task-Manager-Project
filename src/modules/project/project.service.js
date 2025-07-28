@@ -7,6 +7,7 @@ import userRepository from "../user/user.repository.js";
 import { generateToken } from "../../utils/jwt.js";
 import projectMembersRepository from "../projectMembers/projectMembers.repository.js";
 import { verifyToken } from "../../utils/jwt.js";
+import chatRepository from "../chat/chat.repository.js";
 
 class ProjectService {
   constructor() {
@@ -58,8 +59,13 @@ class ProjectService {
       }
 
       const newProject = await projectRepository.create(projectData, userId);
-      if (newProject && newProject.id)
-        await projectMembersRepository.addMember(projectId, userId, "owner");
+      if (newProject && newProject.id) {
+        await projectMembersRepository.addMember(
+          newProject.id,
+          userId,
+          "owner"
+        );
+      }
       return newProject;
     } catch (error) {
       if (error instanceof ApiError) {
@@ -79,7 +85,6 @@ class ProjectService {
         throw new ApiError(400, "Project data is required for update");
       }
 
-      // Check if project exists and user has access
       const existingProject = await projectRepository.get(projectId, userId);
       if (!existingProject) {
         throw new ApiError(
@@ -88,7 +93,6 @@ class ProjectService {
         );
       }
 
-      // Additional check: only allow owners to update projects
       if (existingProject.ownerId !== userId) {
         throw new ApiError(403, "Only project owners can update projects");
       }
@@ -113,7 +117,6 @@ class ProjectService {
         throw new ApiError(400, "Project ID is required");
       }
 
-      // Check if project exists and user is the owner
       const existingProject = await projectRepository.get(projectId, userId);
       if (!existingProject) {
         throw new ApiError(
@@ -122,7 +125,6 @@ class ProjectService {
         );
       }
 
-      // Additional check: only allow owners to delete projects
       if (existingProject.ownerId !== userId) {
         throw new ApiError(403, "Only project owners can delete projects");
       }
@@ -208,7 +210,7 @@ class ProjectService {
       if (error instanceof ApiError) {
         throw error;
       }
-      throw new ApiError(500, "Failed to send project invitation", [
+      throw new ApiError(500, "Failed to accept project invitation", [
         error.message,
       ]);
     }

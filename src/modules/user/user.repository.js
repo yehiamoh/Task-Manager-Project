@@ -8,6 +8,11 @@ class UserRepository {
       },
     });
   }
+  async getUserById(id) {
+    return prisma.user.findFirst({
+      where: { id },
+    });
+  }
 }
 
 export default new UserRepository();

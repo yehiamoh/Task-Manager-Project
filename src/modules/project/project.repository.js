@@ -62,6 +62,7 @@ class ProjectRepository {
             id: true,
           },
         },
+        chat: true,
       },
     });
   }
@@ -101,17 +102,23 @@ class ProjectRepository {
             id: true,
           },
         },
+        chat: true,
       },
     });
   }
 
   async create(projectData, userId) {
-    const { name, description, members = [], tasks = [] } = projectData;
+    const { name, description } = projectData;
     return await prisma.project.create({
       data: {
         name,
         ownerId: userId,
         description,
+        chat: {
+          create: {
+            type: "project",
+          },
+        },
       },
       include: {
         owner: {
@@ -133,6 +140,7 @@ class ProjectRepository {
             },
           },
         },
+        chat: true,
       },
     });
   }
