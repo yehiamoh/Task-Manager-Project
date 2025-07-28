@@ -2,6 +2,7 @@ import {
   CreatCommentOnTaskService,
   GetCommentByIDService,
   GetAllTasksOnCommentService,
+  DeleteCommentService,
 } from "./comment.service.js";
 
 export const CreateCommentController = async (req, res, next) => {
@@ -53,6 +54,18 @@ export const GetAllCommentsOnATaskController = async (req, res, next) => {
 
     const comments = await GetAllTasksOnCommentService(taskId, offset, limit);
     res.status(200).json(comments);
+  } catch (error) {
+    next(error);
+  }
+};
+export const DeleteCommentController = async (req, res, next) => {
+  try {
+    const { commentId } = req.params;
+
+    await DeleteCommentService(commentId);
+    res
+      .status(200)
+      .json({ status: "success", message: "comment Deleted Successfully" });
   } catch (error) {
     next(error);
   }

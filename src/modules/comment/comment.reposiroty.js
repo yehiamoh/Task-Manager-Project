@@ -53,3 +53,7 @@ export const GetAllCommentsOnATask = async (taskId, offset = 0, limit = 5) => {
     take: limit,
   });
 };
+
+export const DeleteComment = async (commentId) => {
+  return prisma.comment.delete({ where: { id: commentId } });
+};

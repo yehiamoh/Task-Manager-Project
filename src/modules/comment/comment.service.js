@@ -2,6 +2,7 @@ import {
   CreateCommentOnATask,
   GetCommentByID,
   GetAllCommentsOnATask,
+  DeleteComment,
 } from "./comment.reposiroty.js";
 import { GetTaskByIdReposiroty } from "../task/task.repository.js";
 import ApiError from "../../utils/api.error.js";
@@ -37,4 +38,13 @@ export const GetAllTasksOnCommentService = async (taskId, offest, limit) => {
   const IsTaskExists = await GetTaskByIdReposiroty(taskId);
   if (!IsTaskExists) throw new ApiError(404, "Task Not Found");
   return await GetAllCommentsOnATask(taskId, offest, limit);
+};
+
+export const DeleteCommentService = async (commentId) => {
+  if (!commentId)
+    throw new ApiError(400, "Bad Request plese provide a valid comment id ");
+  const comment = await GetCommentByID(commentId);
+  if (!comment) throw new ApiError(404, "Comment Not Found");
+
+  return await DeleteComment(commentId);
 };
