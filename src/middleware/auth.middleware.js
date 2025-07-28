@@ -1,20 +1,16 @@
 import jwt from "jsonwebtoken";
 import ApiError from "../utils/api.error.js";
 import asyncHandler from "../utils/asyncHandler.js";
-
+import { verifyToken, extractTokenFromHeader } from "../utils/jwt.js";
 export const verifyLogin = asyncHandler(async (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token =
-    authHeader && authHeader.startsWith("Bearer ")
-      ? authHeader.substring(7)
-      : null;
+  const token = extractTokenFromHeader(authHeader);
   if (!token) {
     throw new ApiError(401, "Authentication required");
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = verifyToken(token);
     next();
   } catch (error) {
     if (error instanceof ApiError) {
