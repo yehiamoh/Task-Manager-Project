@@ -9,6 +9,7 @@ import {
   sendInvite,
   acceptInvitation,
 } from "./project.controller.js";
+import { isProjectOwner } from "../../middleware/isProjectOwner.middleware.js";
 
 const projectRouter = express.Router();
 
@@ -27,7 +28,7 @@ projectRouter.post("/project/:projectId/invite", verifyLogin, sendInvite);
 projectRouter
   .route("/project/:projectId")
   .get(verifyLogin, getProject)
-  .put(verifyLogin, updateProject)
-  .delete(verifyLogin, deleteProject);
+  .put(verifyLogin, isProjectOwner, updateProject)
+  .delete(verifyLogin, isProjectOwner, deleteProject);
 
 export default projectRouter;
