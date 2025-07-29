@@ -22,3 +22,19 @@ export const getUserByEmail = asyncHandler(async (req, res) => {
     data: user,
   });
 });
+
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const { userId } = req.user;
+
+    const userProfile = await userService.getUserProfile(userId);
+
+    res.status(200).json({
+      status: "success",
+      message: "User Profile Retrieved",
+      data: userProfile,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

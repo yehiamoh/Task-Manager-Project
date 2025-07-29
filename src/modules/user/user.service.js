@@ -11,6 +11,10 @@ class UserService {
       throw new ApiError(500, "Failed to retrieve user");
     }
   }
+  async getUserProfile(userId) {
+    if (!userId) throw new ApiError(400, "Bad Request provide a vaild user id");
+    return await userRepository.getUserProfile(userId);
+  }
 }
 
 export default new UserService();
