@@ -47,7 +47,8 @@ app.use((req, res) => {
 const io = initializeSocket(server);
 
 export { app, io };
-
-server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+export default function handler(req, res) {
+  return app(req, res);
+} // server.listen(PORT, () => {
+//   console.log(`Server is running on http://localhost:${PORT}`);
+// });
