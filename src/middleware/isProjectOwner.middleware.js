@@ -1,6 +1,5 @@
-import projectRepository from "../modules/project/project.repository";
-import projectService from "../modules/project/project.service";
-import ApiError from "../utils/api.error";
+import projectRepository from "../modules/project/project.repository.js";
+import ApiError from "../utils/api.error.js";
 export const isProjectOwner = async (req, res, next) => {
   try {
     const { projectId } = req.params;
