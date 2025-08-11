@@ -12,27 +12,12 @@ import authRouter from "./modules/auth/auth.route.js";
 import chatRouter from "./modules/chat/chat.route.js";
 import { errorHandler } from "./middleware/errorHandler.middleware.js";
 import commentRouter from "./modules/comment/comment.router.js";
-import { specs, swaggerUi } from "./docs/swagger.js";
 const PORT = process.env.PORT ?? 3000;
 
 const app = express();
 const server = createServer(app);
 
 app.use(express.json());
-
-// Swagger Documentation
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs, {
-  explorer: true,
-  customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: "Task Manager API Documentation",
-  swaggerOptions: {
-    persistAuthorization: true,
-    displayRequestDuration: true,
-    filter: true,
-    showExtensions: true,
-    showCommonExtensions: true
-  }
-}));
 
 // Api Routes
 app.use("/api", authRouter);
@@ -45,21 +30,9 @@ app.use("/api", commentRouter);
 // Simple connection check
 app.get("/", (req, res) => {
   res.json({
-    message: "Welcome to Task Manager API",
+    message: "Connected",
     status: "Server is running",
-    version: "1.0.0",
-    documentation: {
-      swagger: "Visit /api-docs for interactive API documentation",
-      endpoints: "All API endpoints are prefixed with /api"
-    },
-    features: [
-      "User authentication and authorization",
-      "Project management with team collaboration",
-      "Task creation, assignment, and tracking",
-      "Real-time chat functionality",
-      "Comment system for tasks",
-      "Project member management"
-    ]
+    documentation: "Visit /api-docs for API documentation",
   });
 });
 app.use(errorHandler);
